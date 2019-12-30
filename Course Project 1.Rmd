@@ -1,0 +1,165 @@
+---
+title: "Course Project 1"
+author: "Neel"
+date: "30/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+# THE DOCUMENTATION FOR COURSE PROJECT 1 STARTS HERE
+
+# Reading the file
+```{r , echo=TRUE}
+data<-read.csv("activity.csv", na.strings = "NA")
+```
+
+# calculating the sum
+```{r , echo=TRUE}
+v1<-is.na(data$steps)
+
+newdata<-data[!v1,]
+
+library(dplyr)
+
+alldates<-unique(data$date)
+```
+
+# need to do some modifications for getting the sum for each date
+```{r , echo=TRUE}
+sumvec<-1:61;
+ind<-1:61;
+
+for (i in 1:61) {
+  
+  index<-grep(as.character(alldates[i]), newdata$date)
+  
+  datedata<-newdata[index,]
+  
+  ind[i]<-length(index)
+  
+  sumvec[i]<-sum(datedata$steps)
+  
+}
+```
+
+# Plotting the histogram
+```{r , echo=TRUE}
+comb<-cbind(sumvec, alldates)
+
+plot(comb[,2], comb[,1], type="h", xlab = "Dates", ylab = "Sum of Steps")
+```
+# End of this part
+
+
+# mean and median steps per day
+```{r , echo=TRUE}
+m<-sumvec/ind;
+
+hist(m, xlab = "Date", ylab = "Mean per day", main = "Histogram of Mean")
+
+med<-median(sumvec)
+```
+# End of this part
+
+
+# Initialising the new column in newdata
+```{r , echo=TRUE}
+newdata$v1<-0
+
+for (i in 1:15264) {
+  
+  newdata$v1[i]<-mean(newdata$steps[1:i])
+  
+}
+
+
+plot(newdata$interval, exp(newdata$v1), type = "l", xlab = "Interval", ylab = "Steps", main = "Time Series")
+```
+
+# exponential for getting a more clear view of the time series
+```{r , echo=TRUE}
+max<-max(newdata$v1)
+
+j<-grep(max, newdata$v1)
+
+maxinterval<-newdata$interval[j]
+```
+# End of this part
+
+```{r , echo=TRUE}
+sum(is.na(data$steps))
+
+data$steps2<-0;
+
+for (i in 1:17568) {
+
+if (is.na(data$steps[i])==TRUE) {
+  
+  data$steps2[i]<-newdata$v1[i]
+  
+} 
+  } 
+```
+# data set corrected
+
+```{r , echo=TRUE}
+sumvec<-1:61;
+ind<-1:61;
+
+for (i in 1:61) {
+  
+  index<-grep(as.character(alldates[i]), data$date)
+  
+  datedata<-data[index,]
+  
+  ind[i]<-length(index)
+  
+  sumvec[i]<-sum(datedata$steps2)
+  
+}
+```
+
+# Plotting the histogram
+```{r , echo=TRUE}
+comb<-cbind(sumvec, alldates)
+
+plot(comb[,2], comb[,1], type="h", xlab = "Dates", ylab = "Sum of Steps")
+```
+
+# mean and median steps per day
+```{r , echo=TRUE}
+m<-sumvec/ind;
+
+hist(m, xlab = "Date", ylab = "Mean per day", main = "Histogram of Mean")
+
+med<-median(sumvec)
+```
+# End of this part
+
+# NOTE: some graphs may be better understood by using log or exponential scales
+
+
